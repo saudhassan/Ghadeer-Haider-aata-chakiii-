@@ -28,13 +28,18 @@ jobs:
       - name: Install Capacitor
         run: npm install @capacitor/core @capacitor/cli @capacitor/android
 
+      - name: Prepare website
+        run: |
+          mkdir -p www
+          cp -r ./* www/ 2>/dev/null || true
+
       - name: Create Capacitor config
         run: |
           cat > capacitor.config.json <<'EOF'
           {
             "appId": "com.ghadeerhaider.aatachakki",
             "appName": "Ghadeer Haider Aata Chakki",
-            "webDir": ".",
+            "webDir": "www",
             "server": {
               "androidScheme": "https"
             }
