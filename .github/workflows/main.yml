@@ -1,4 +1,4 @@
-name: Build Android AAB
+name: Build Android App
 
 on:
   workflow_dispatch:
@@ -49,17 +49,17 @@ jobs:
       - name: Create Android project
         run: npx cap add android
 
-      - name: Copy website to Android
+      - name: Copy website
         run: npx cap copy android
 
-      - name: Build Android AAB
+      - name: Build APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew bundleRelease
+          ./gradlew assembleDebug
 
-      - name: Upload AAB
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Ghadeer-Haider-Aata-Chakki-AAB
-          path: android/app/build/outputs/bundle/release/app-release.aab
+          name: Ghadeer-Haider-Aata-Chakki-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
