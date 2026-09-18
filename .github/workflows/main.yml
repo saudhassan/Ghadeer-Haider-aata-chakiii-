@@ -5,46 +5,51 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout website
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: 17
 
       - name: Create package.json
+        run: npm init -y
+
+      - name: Install Capacitor
+        run: npm install @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: Create Capacitor config
         run: |
-          cat > package.json <<'EOF'
+          cat > capacitor.config.json <<'EOF'
           {
-            "name": "ghadeer-haider-aata-chakki",
-            "version": "1.0.0",
-            "private": true
+            "appId": "com.ghadeerhaider.aatachakki",
+            "appName": "Ghadeer Haider Aata Chakki",
+            "webDir": ".",
+            "server": {
+              "androidScheme": "https"
+            }
           }
           EOF
 
-      - name: Install Capacitor
-        run: |
-          npm install @capacitor/core@8.5.2 @capacitor/cli@8.5.2 @capacitor/android@8.5.2
-
       - name: Create Android project
-        run: |
-          npx cap init "Ghadeer Haider Aata Chakki" "com.ghadeerhaider.aatachakki" --web-dir .
-          npx cap add android
-          npx cap copy android
+        run: npx cap add android
+
+      - name: Copy website to Android
+        run: npx cap copy android
 
       - name: Build Android AAB
-        working-directory: android
         run: |
+          cd android
           chmod +x gradlew
           ./gradlew bundleRelease
 
@@ -52,4 +57,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Ghadeer-Haider-Aata-Chakki-AAB
-          path: android/app/build/outputs/bundle/release/*.aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
